@@ -18,6 +18,8 @@ Product.lastSet = [];
 // track current set
 Product.currSet = [];
 
+Product.totalVotes = [];
+
 // array to store names for the chart
 Product.names = [];
 
@@ -33,6 +35,7 @@ Product.ulEl = document.getElementById('results');
 // set up the constructor function
 function Product(name, filepath) {
   this.name = name;
+  Product.names.push(name);
   this.filepath = filepath;
   this.votes = 0;
   this.timesDisplayed = 0;
@@ -96,6 +99,12 @@ Product.renderCurrSet = function() {
   Product.allProducts[Product.currSet[2]].timesDisplayed += 1;
 };
 
+Product.finalizeVotes = function() {
+  for(var i in Product.allProducts) {
+    Product.totalVotes.push(Product.allProducts[i].votes);
+  }
+};
+
 Product.handleClick = function(event) {
   // increment total clicks
   Product.totalClicks += 1;
@@ -122,7 +131,9 @@ Product.handleClick = function(event) {
   } else {
     // else max clicks reached, disable event listener and display results
     Product.sectionEl.removeEventListener('click', Product.handleClick);
+    Product.finalizeVotes();
     Product.renderResults();
+    Product.renderChart();
   }
 };
 
@@ -140,3 +151,40 @@ Product.sectionEl.addEventListener('click', Product.handleClick);
 
 Product.createRandomSet();
 Product.renderCurrSet();
+
+// method to render the chart on the screen
+Product.renderChart = function() {
+  var context = document.getElementById('results-chart').getContext('2d');
+
+  // 4 rainbow colors repeated 5 times to cover all 20 images
+  var chartColors = ['red', 'orange', 'yellow', 'green', 'blue',
+    'red', 'orange', 'yellow', 'green', 'blue',
+    'red', 'orange', 'yellow', 'green', 'blue',
+    'red', 'orange', 'yellow', 'green', 'blue',];
+
+  var productChart = new Chart(context, { // eslint-disable-line
+    type: 'bar',
+    data : {
+      labels: Product.names,
+      datasets: [{
+        label: 'Product Votes',
+        data: Product.totalVotes,
+        backgroundColor: chartColors,
+      }],
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          tick: {
+            beginAtZero: true,
+          }
+        }],
+        xAxes: [{
+          ticks: {
+            autoSkip: false
+          }
+        }]
+      }
+    }
+  });
+};
