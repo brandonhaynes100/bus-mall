@@ -3,11 +3,14 @@
 // the number of products to display on the page
 Product.numToDisplay = 3;
 
-// array to store the objects
-Product.allProducts = [];
+// the number of times to choose
+Product.timesToClick = 5;
 
 // keep track of all clicks
 Product.totalClicks = 0;
+
+// array to store the objects
+Product.allProducts = [];
 
 // track previously displayed goats
 Product.lastSet = [];
@@ -34,6 +37,7 @@ function Product(name, filepath) {
   this.votes = 0;
   this.timesDisplayed = 0;
   Product.allProducts.push(this);
+  this.allProductsIndex = Product.allProducts.indexOf(this);
 }
 
 // make new Goat instances
@@ -63,7 +67,7 @@ Product.slot0El = document.getElementById('slot0');
 Product.slot1El = document.getElementById('slot1');
 Product.slot2El = document.getElementById('slot2');
 
-Product.randomProductDisplay = function() {
+Product.createRandomSet = function() {
   // while the current set isn't full
   while (Product.currSet.length < Product.numToDisplay) {
     //generate a random index
@@ -74,15 +78,56 @@ Product.randomProductDisplay = function() {
       Product.currSet.push(randomIndex);
     }
   }
-  // change the image elements in the DOM to match the filepaht and name from the randomly selected products
+};
+
+Product.renderCurrSet = function() {
+  // change the image elements in the DOM to match the filepath and name from the randomly selected products
   Product.slot0El.src = Product.allProducts[Product.currSet[0]].filepath;
   Product.slot0El.alt = Product.allProducts[Product.currSet[0]].name;
+  Product.allProducts[Product.currSet[0]].timesDisplayed += 1;
+
 
   Product.slot1El.src = Product.allProducts[Product.currSet[1]].filepath;
   Product.slot1El.alt = Product.allProducts[Product.currSet[1]].name;
+  Product.allProducts[Product.currSet[1]].timesDisplayed += 1;
 
   Product.slot2El.src = Product.allProducts[Product.currSet[2]].filepath;
   Product.slot2El.alt = Product.allProducts[Product.currSet[2]].name;
+  Product.allProducts[Product.currSet[2]].timesDisplayed += 1;
 };
 
-Product.randomProductDisplay();
+Product.handleClick = function(event) {
+  // increment total clicks
+  Product.totalClicks += 1;
+
+  // place the current set into the last set array
+  Product.lastSet = Product.currSet;
+  // empty the current set array
+  Product.currSet = [];
+
+  // loop through allProducts to check for the product that was voted on
+  for(var i in Product.allProducts) {
+    // determine which product was clicked on
+    if(event.target.alt === Product.allProducts[i].name) {
+      // increment its number of votes
+      Product.allProducts[i].votes++;
+    }
+  }
+
+  // if the max number of clicks has not been reached
+  if(Product.totalClicks <= Product.timesToClick) {
+    // display a new choice
+    Product.createRandomSet();
+    Product.renderCurrSet();
+  } else {
+    // if max clicks reached, disable event listener
+    Product.sectionEl.removeEventListener('click', Product.handleClick);
+  }
+  
+};
+
+// add event listener to the section
+Product.sectionEl.addEventListener('click', Product.handleClick);
+
+Product.createRandomSet();
+Product.renderCurrSet();
