@@ -73,7 +73,7 @@ Product.createRandomSet = function() {
     //generate a random index
     var randomIndex = Math.floor(Math.random() * Product.allProducts.length);
     // if the generated index is not in the current set nor the previous set, add it to the current set
-    if(!(Product.currSet.includes(randomIndex) 
+    if(!(Product.currSet.includes(randomIndex)
         || Product.lastSet.includes(randomIndex))) {
       Product.currSet.push(randomIndex);
     }
@@ -115,15 +115,24 @@ Product.handleClick = function(event) {
   }
 
   // if the max number of clicks has not been reached
-  if(Product.totalClicks <= Product.timesToClick) {
+  if(Product.totalClicks < Product.timesToClick) {
     // display a new choice
     Product.createRandomSet();
     Product.renderCurrSet();
   } else {
-    // if max clicks reached, disable event listener
+    // else max clicks reached, disable event listener and display results
     Product.sectionEl.removeEventListener('click', Product.handleClick);
+    Product.renderResults();
   }
-  
+};
+
+// render a list of the results to the screen
+Product.renderResults = function() {
+  for(var i in Product.allProducts) {
+    var liEl = document.createElement('li');
+    liEl.textContent = `${Product.allProducts[i].name} got ${Product.allProducts[i].votes} votes after being displayed ${Product.allProducts[i].timesDisplayed} times.`;
+    Product.ulEl.appendChild(liEl);
+  }
 };
 
 // add event listener to the section
