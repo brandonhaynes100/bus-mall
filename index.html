@@ -27,16 +27,20 @@
     
     <main>
       <h1>Please select the image you like best.</h1>
-      <ul id="results"></ul>
+
       <ul id="display-area">
         <li><img id="slot0" src="http://placehold.it/300x300/000" alt=""></li>
         <li><img id="slot1" src="http://placehold.it/300x300/000" alt=""></li>
         <li><img id="slot2" src="http://placehold.it/300x300/000" alt=""></li>
       </ul>
+
+      <canvas id="results-chart" height="300px" width="600px"></canvas>
+
+      <ul id="results"></ul>
     </main>
 
     <footer></footer>
-    <!-- <script src="CDNsource.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>
