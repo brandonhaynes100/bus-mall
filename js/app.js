@@ -4,7 +4,7 @@
 Product.numToDisplay = 3;
 
 // the number of times to choose
-Product.timesToClick = 5;
+Product.timesToClick = 25;
 
 // keep track of all clicks
 Product.totalClicks = 0;
