@@ -29,6 +29,11 @@ main {
   width: 960px;
   margin: 30px auto;
 }
+
+main li img {
+  height: 200px;
+}
+
 main li {
   float: left;
   margin-right: 30px;
