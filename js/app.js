@@ -4,27 +4,30 @@
 Product.numToDisplay = 3;
 
 // the number of times to choose
-Product.timesToClick = 25;
+Product.timesToClick = 5;
 
 // keep track of all clicks
 Product.totalClicks = 0;
 
 // array to store the objects
+// contains objects
 Product.allProducts = [];
 
-// track previously displayed goats
+// track previously displayed set
+// contains numbers
 Product.lastSet = [];
 
 // track current set
+// contains numbers
 Product.currSet = [];
 
+// for displaying the votes for each item at the end
+// contains numbers
 Product.totalVotes = [];
 
 // array to store names for the chart
+// contains strings
 Product.names = [];
-
-// array to store votes for the chart
-Product.totalValues = [];
 
 // access the section element from the DOM
 Product.sectionEl = document.getElementById('display-area');
@@ -43,7 +46,7 @@ function Product(name, filepath) {
   this.allProductsIndex = Product.allProducts.indexOf(this);
 }
 
-// make new Goat instances
+// make new Product instances
 new Product('R2D2 bag', 'img/bag.jpg');
 new Product('Banana slicer', 'img/banana.jpg');
 new Product('Bathroom stand', 'img/bathroom.jpg');
@@ -137,6 +140,46 @@ Product.handleClick = function(event) {
   }
 };
 
+Product.pageLoadCheckLocalStorage = function() {
+  // if there is stored local data
+  if(localStorage.getItem('allProductObjects') !== null) {
+    // load it
+    Product.loadLocalStorage();
+  // else there is no data, so create it
+  } else {
+    // create new local storage
+    Product.saveLocalStorage();
+  }
+};
+
+Product.saveLocalStorage = function() {
+  console.log('saving local data');
+  // stringify all the Product objects in the allProducts array
+  var stringifiedAllProducts = JSON.stringify(Product.allProducts);
+  // pass the stringified array into local storage
+  localStorage.setItem('allProductObjects', stringifiedAllProducts);
+};
+
+Product.loadLocalStorage = function() {
+  console.log('local data detected - loading');
+  // get the item in local storage and put it into a variable
+  var stringifiedAllProducts = localStorage.getItem('allProductObjects');
+  // parse the item retrieved
+  Product.allProducts = JSON.parse(stringifiedAllProducts);
+};
+
+//   FOR PROGRAM:
+// When data finished gathering (using userResults as localStorage value):
+//   remove event listener
+//   store results in local storage
+//     localStorage.setItem('userResults', JSON.stringify(Goat.allGoats));
+//     localStorage.userResults = JSON.stringify(Goat.allGoats); // same as above
+//   display results
+
+// When checking local storage for results(using userResults as localStorage value):
+//   Goat.parsedGoats = JSON.parse(localStorage.getItem('userResults'));
+//   // Goat.parsedGoats will be either array of objects or null
+
 // render a list of the results to the screen
 Product.renderResults = function() {
   for(var i in Product.allProducts) {
@@ -149,11 +192,18 @@ Product.renderResults = function() {
 // add event listener to the section
 Product.sectionEl.addEventListener('click', Product.handleClick);
 
+Product.pageLoadCheckLocalStorage();
+//create a random set for pageload
 Product.createRandomSet();
+// render the random set on pageload
 Product.renderCurrSet();
+
 
 // method to render the chart on the screen
 Product.renderChart = function() {
+
+  Product.saveLocalStorage();
+
   var context = document.getElementById('results-chart').getContext('2d');
 
   // 4 rainbow colors repeated 5 times to cover all 20 images
