@@ -26,7 +26,18 @@
     </header>
     
     <main>
-      <h1>Please select the image you like best.</h1>
+      <h1>Busmall - Customer Preferences Survey</h1>
+      <h2>Thank you for your participation!</h2>
+      <p>In order to effectively gather data on user preferences, we'll be displaying 3 randomly selected products below. Please select the product out of the set that appeals to you the most. After 25 selections, you will see your results dispayed in a chart!</p>
+      <ol>
+        <li>Select the most appealing product.</li>
+        <li>Repeat step one 25 times.</li>
+        <li>View data about what you saw and what you selected.</li>
+        <li>Your selections will be saved so you can continue contributing data!</li>
+      </ol>
+
+
+      <h3 id="selections-remaining-section">Selections remaining: <span id="selections-remaining"></span></h3>
 
       <ul id="display-area">
         <li><img id="slot0" src="http://placehold.it/300x300/000" alt=""></li>
@@ -35,8 +46,6 @@
       </ul>
 
       <canvas id="results-chart" height="300px" width="600px"></canvas>
-
-      <ul id="results"></ul>
     </main>
 
     <footer></footer>

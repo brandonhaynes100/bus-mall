@@ -10,21 +10,24 @@ Product.timesToClick = 25;
 Product.totalClicks = 0;
 
 // array to store the objects
+// contains objects
 Product.allProducts = [];
 
-// track previously displayed goats
+// track previously displayed set
+// contains numbers
 Product.lastSet = [];
 
 // track current set
+// contains numbers
 Product.currSet = [];
 
+// for displaying the votes for each item at the end
+// contains numbers
 Product.totalVotes = [];
 
 // array to store names for the chart
+// contains strings
 Product.names = [];
-
-// array to store votes for the chart
-Product.totalValues = [];
 
 // access the section element from the DOM
 Product.sectionEl = document.getElementById('display-area');
@@ -43,7 +46,7 @@ function Product(name, filepath) {
   this.allProductsIndex = Product.allProducts.indexOf(this);
 }
 
-// make new Goat instances
+// make new Product instances
 new Product('R2D2 bag', 'img/bag.jpg');
 new Product('Banana slicer', 'img/banana.jpg');
 new Product('Bathroom stand', 'img/bathroom.jpg');
@@ -99,6 +102,7 @@ Product.renderCurrSet = function() {
   Product.allProducts[Product.currSet[2]].timesDisplayed += 1;
 };
 
+// pushes each Product object's votes into the totalVotes array
 Product.finalizeVotes = function() {
   for(var i in Product.allProducts) {
     Product.totalVotes.push(Product.allProducts[i].votes);
@@ -108,6 +112,9 @@ Product.finalizeVotes = function() {
 Product.handleClick = function(event) {
   // increment total clicks
   Product.totalClicks += 1;
+
+  // update the selections remaining above the display area
+  document.getElementById('selections-remaining').innerText = Product.timesToClick - Product.totalClicks;
 
   // place the current set into the last set array
   Product.lastSet = Product.currSet;
@@ -132,28 +139,58 @@ Product.handleClick = function(event) {
     // else max clicks reached, disable event listener and display results
     Product.sectionEl.removeEventListener('click', Product.handleClick);
     Product.finalizeVotes();
-    Product.renderResults();
     Product.renderChart();
   }
 };
 
-// render a list of the results to the screen
-Product.renderResults = function() {
-  for(var i in Product.allProducts) {
-    var liEl = document.createElement('li');
-    liEl.textContent = `${Product.allProducts[i].name} got ${Product.allProducts[i].votes} votes after being displayed ${Product.allProducts[i].timesDisplayed} times.`;
-    Product.ulEl.appendChild(liEl);
+Product.pageLoadCheckLocalStorage = function() {
+  // if there is stored local data
+  if(localStorage.getItem('allProductObjects') !== null) {
+    // load it
+    Product.loadLocalStorage();
+  // else there is no data, so create it
+  } else {
+    // create new local storage
+    Product.saveLocalStorage();
   }
+};
+
+Product.saveLocalStorage = function() {
+  console.log('saving local data');
+  // stringify all the Product objects in the allProducts array
+  var stringifiedAllProducts = JSON.stringify(Product.allProducts);
+  // pass the stringified array into local storage
+  localStorage.setItem('allProductObjects', stringifiedAllProducts);
+};
+
+Product.loadLocalStorage = function() {
+  console.log('local data detected - loading');
+  // get the item in local storage and put it into a variable
+  var stringifiedAllProducts = localStorage.getItem('allProductObjects');
+  // parse the item retrieved
+  Product.allProducts = JSON.parse(stringifiedAllProducts);
 };
 
 // add event listener to the section
 Product.sectionEl.addEventListener('click', Product.handleClick);
 
+// on page load, check whether there is already local storage data
+Product.pageLoadCheckLocalStorage();
+//create a random set to display on pageload
 Product.createRandomSet();
+// render the random set on pageload
 Product.renderCurrSet();
+
 
 // method to render the chart on the screen
 Product.renderChart = function() {
+  // save the current state to local storage
+  Product.saveLocalStorage();
+
+  // change the display area's display to none so the chart replaces it
+  document.getElementById('display-area').style.display = 'none';
+  document.getElementById('selections-remaining-section').style.display = 'none';
+
   var context = document.getElementById('results-chart').getContext('2d');
 
   // 4 rainbow colors repeated 5 times to cover all 20 images
@@ -181,6 +218,7 @@ Product.renderChart = function() {
         }],
         xAxes: [{
           ticks: {
+            // ensures all names appear along chart bottom
             autoSkip: false
           }
         }]
