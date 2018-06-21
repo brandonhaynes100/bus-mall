@@ -4,7 +4,7 @@
 Product.numToDisplay = 3;
 
 // the number of times to choose
-Product.timesToClick = 5;
+Product.timesToClick = 25;
 
 // keep track of all clicks
 Product.totalClicks = 0;
@@ -102,6 +102,7 @@ Product.renderCurrSet = function() {
   Product.allProducts[Product.currSet[2]].timesDisplayed += 1;
 };
 
+// pushes each Product object's votes into the totalVotes array
 Product.finalizeVotes = function() {
   for(var i in Product.allProducts) {
     Product.totalVotes.push(Product.allProducts[i].votes);
@@ -111,6 +112,9 @@ Product.finalizeVotes = function() {
 Product.handleClick = function(event) {
   // increment total clicks
   Product.totalClicks += 1;
+
+  // update the selections remaining above the display area
+  document.getElementById('selections-remaining').innerText = Product.timesToClick - Product.totalClicks;
 
   // place the current set into the last set array
   Product.lastSet = Product.currSet;
@@ -135,7 +139,6 @@ Product.handleClick = function(event) {
     // else max clicks reached, disable event listener and display results
     Product.sectionEl.removeEventListener('click', Product.handleClick);
     Product.finalizeVotes();
-    Product.renderResults();
     Product.renderChart();
   }
 };
@@ -168,32 +171,12 @@ Product.loadLocalStorage = function() {
   Product.allProducts = JSON.parse(stringifiedAllProducts);
 };
 
-//   FOR PROGRAM:
-// When data finished gathering (using userResults as localStorage value):
-//   remove event listener
-//   store results in local storage
-//     localStorage.setItem('userResults', JSON.stringify(Goat.allGoats));
-//     localStorage.userResults = JSON.stringify(Goat.allGoats); // same as above
-//   display results
-
-// When checking local storage for results(using userResults as localStorage value):
-//   Goat.parsedGoats = JSON.parse(localStorage.getItem('userResults'));
-//   // Goat.parsedGoats will be either array of objects or null
-
-// render a list of the results to the screen
-Product.renderResults = function() {
-  for(var i in Product.allProducts) {
-    var liEl = document.createElement('li');
-    liEl.textContent = `${Product.allProducts[i].name} got ${Product.allProducts[i].votes} votes after being displayed ${Product.allProducts[i].timesDisplayed} times.`;
-    Product.ulEl.appendChild(liEl);
-  }
-};
-
 // add event listener to the section
 Product.sectionEl.addEventListener('click', Product.handleClick);
 
+// on page load, check whether there is already local storage data
 Product.pageLoadCheckLocalStorage();
-//create a random set for pageload
+//create a random set to display on pageload
 Product.createRandomSet();
 // render the random set on pageload
 Product.renderCurrSet();
@@ -201,8 +184,12 @@ Product.renderCurrSet();
 
 // method to render the chart on the screen
 Product.renderChart = function() {
-
+  // save the current state to local storage
   Product.saveLocalStorage();
+
+  // change the display area's display to none so the chart replaces it
+  document.getElementById('display-area').style.display = 'none';
+  document.getElementById('selections-remaining-section').style.display = 'none';
 
   var context = document.getElementById('results-chart').getContext('2d');
 
@@ -231,6 +218,7 @@ Product.renderChart = function() {
         }],
         xAxes: [{
           ticks: {
+            // ensures all names appear along chart bottom
             autoSkip: false
           }
         }]

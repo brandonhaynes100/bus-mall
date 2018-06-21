@@ -31,8 +31,28 @@ main {
 }
 
 main h1 {
-  font-size: 30px;
+  font-size: 40px;
   text-align: center;
+}
+
+main h2 {
+  font-size: 30px;
+  margin-top: 20px;
+}
+
+main h3 {
+  font-size: 20px;
+}
+
+main p, ol {
+  margin: 10px 20px;
+  display: inline-block;
+  width: 400px;
+  line-height: 20px;
+}
+
+main ol {
+  list-style-type: decimal;
 }
 
 main li img {
@@ -41,36 +61,13 @@ main li img {
 
 main ul#display-area li {
   float: left;
-  margin-right: 30px;
+  margin-right: 20px;
   margin-top: 30px;
   margin-bottom: 30px;
 }
 
 main li:last-child {
   margin-right: 0;
-}
-
-main section {
-  height: 530px;
-}
-
-main section img {
-  float: left;
-  margin-right: 30px;
-}
-
-main section h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-main section p {
-  height: 325px;
-  font-size: 18px;
-  line-height: 24px;
-  font-style: italic;
-  overflow: auto;
 }
 
 footer {
